@@ -10,6 +10,7 @@ export const plans = [
     price: "$1,000",
     sessions: "4 1:1 Sessions",
     focus: "Self-belief foundation",
+    video: "/videos/starter.mp4",
     features: [
       "4 weekly 1:1 sessions",
       "Identity reset & awareness tools",
@@ -23,6 +24,7 @@ export const plans = [
     price: "$2,500",
     sessions: "8 1:1 Sessions",
     focus: "Confidence + motivation",
+    video: "/videos/pro.mp4",
     features: [
       "8 weekly 1:1 sessions",
       "Identity reset + emotional rewiring",
@@ -38,6 +40,7 @@ export const plans = [
     price: "Contact for Details",
     sessions: "12 1:1 Sessions",
     focus: "Identity + purpose",
+    video: "/videos/elite.mp4",
     features: [
       "12 weekly 1:1 sessions",
       "Presence & confidence mastery",
@@ -64,7 +67,11 @@ function AccordionItem({ question, answer, isOpen, toggle }) {
         <span className="text-lg md:text-xl">{question}</span>
         <span className="text-2xl">{isOpen ? "–" : "+"}</span>
       </button>
-      <div className={`transition-max-height duration-500 ease-in-out overflow-hidden px-6 text-gray-300 ${isOpen ? "max-h-96 py-4" : "max-h-0"}`}>
+      <div
+        className={`transition-max-height duration-500 ease-in-out overflow-hidden px-6 text-gray-300 ${
+          isOpen ? "max-h-96 py-4" : "max-h-0"
+        }`}
+      >
         {answer}
       </div>
     </div>
@@ -77,10 +84,11 @@ export default function Packages() {
 
   return (
     <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col">
+
       {/* HEADER */}
       <header className="w-full flex items-center justify-between px-8 py-4 bg-[#2A2A2A] shadow-md">
-        <Link to="/" className="text-yellow-400 text-xl font-bold tracking-wide">
-          LIMITLESS IVAN
+        <Link to="/" className="text-xl font-bold tracking-wide">
+          <span className="text-white">LIMITLESS</span> <span className="text-yellow-400">IVAN</span>
         </Link>
         <Link to="/" className="hover:text-yellow-400 transition">
           ← Back to Home
@@ -89,39 +97,63 @@ export default function Packages() {
 
       {/* BANNER */}
       <div className="relative w-full">
-        <img src={ytCover} alt="Break limits" className="w-full h-auto object-contain" />
+        <img src={ytCover} alt="Break limits" className="w-full h-auto object-cover rounded-b-3xl" />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center"></div>
       </div>
 
       {/* PACKAGES */}
-      <section className="px-10 py-16 flex-grow">
-        <h2 className="text-4xl font-bold text-yellow-400 mb-3">Coaching Packages</h2>
-        <p className="text-gray-300 max-w-2xl mb-10">
+      <section className="px-6 md:px-16 py-16 flex-grow">
+        <h2 className="text-4xl font-bold text-yellow-400 mb-3 text-center">Coaching Packages</h2>
+        <p className="text-gray-300 max-w-3xl mx-auto mb-12 text-center">
           Choose a plan that matches your goals — all include weekly 1:1 coaching and mindset transformation tools.
         </p>
 
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan) => (
-            <div key={plan.id} className={`relative rounded-2xl p-8 border transition hover:shadow-xl ${plan.popular ? "border-yellow-400 ring-2 ring-yellow-400/60 bg-[#2E2E2E]" : "border-white/10 bg-[#2A2A2A]"}`}>
+            <div
+              key={plan.id}
+              className={`relative flex flex-col rounded-3xl p-8 border transition hover:shadow-2xl ${
+                plan.popular
+                  ? "border-yellow-400 ring-2 ring-yellow-400/60 bg-gradient-to-br from-[#2F2F2F] via-[#3C3C3C] to-[#2F2F2F]"
+                  : "border-white/10 bg-gradient-to-br from-[#2A2A2A] via-[#333333] to-[#2A2A2A]"
+              }`}
+            >
               {plan.popular && (
                 <span className="absolute -top-3 left-4 px-3 py-1 rounded-full text-xs font-medium bg-yellow-400 text-black shadow">
                   Most Popular
                 </span>
               )}
 
+              {/* Short 5-second Video Preview */}
+              <div className="mb-6 w-full aspect-video rounded-2xl overflow-hidden shadow-lg border border-yellow-500/50">
+                <video
+                  src={plan.video}
+                  autoPlay
+                  muted
+                  className="w-full h-full object-cover bg-black"
+                  onTimeUpdate={(e) => {
+                    if (e.target.currentTime > 5) e.target.currentTime = 0;
+                  }}
+                />
+              </div>
+
+              {/* Package Name and Price */}
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <p className="text-yellow-400 text-xl mb-1">{plan.price}</p>
-              <p className="text-gray-300 mb-1">{plan.duration}</p>
+              <p className="text-yellow-400 text-2xl font-extrabold mb-4">{plan.price}</p>
 
-              {/* Newly added details */}
-              <p className="text-gray-300 text-sm mb-1">{plan.sessions}</p>
-              <p className="text-gray-400 text-xs italic mb-4">{plan.focus}</p>
-
-              <ul className="space-y-2 mb-6 text-white/85">
-                {plan.features.map((f, i) => (
-                  <li key={i}>• {f}</li>
+              {/* Features (professional style, colored) */}
+              <div className="space-y-3 mb-6">
+                {plan.features.map((feature, i) => (
+                  <p
+                    key={i}
+                    className={`p-3 rounded-xl shadow-sm text-sm md:text-base ${
+                      i % 2 === 0 ? "bg-yellow-500/20 text-yellow-400" : "bg-gray-700 text-gray-200"
+                    }`}
+                  >
+                    {feature}
+                  </p>
                 ))}
-              </ul>
+              </div>
 
               <button
                 onClick={() => navigate(`/package/${plan.id}`)}
@@ -134,13 +166,13 @@ export default function Packages() {
         </div>
       </section>
 
-      {/* Empower Your Journey */}
+      {/* FAQs */}
       <section className="px-6 md:px-16 py-16 bg-gray-900 border-t border-yellow-400/30">
         <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-10 text-center drop-shadow-lg">
           Empower Your Journey
         </h2>
         <p className="text-gray-300 max-w-3xl mx-auto text-center mb-12">
-          Here are the answers to the questions most people ask when starting their transformation. Take the first step with clarity and confidence.
+          Here are answers to the questions most people ask when starting their transformation. Take the first step with clarity and confidence.
         </p>
 
         <div className="space-y-4 max-w-3xl mx-auto">
@@ -157,7 +189,7 @@ export default function Packages() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#2A2A2A] text-white px-6 md:px-12 py-12 border-t border-yellow-400/20">
+      <footer className="bg-[#101010] text-white px-6 md:px-12 py-12 border-t border-yellow-500/20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div>
             <h4 className="text-yellow-400 font-bold text-lg mb-2">Limitless Ivan</h4>
@@ -166,20 +198,10 @@ export default function Packages() {
             </p>
           </div>
           <div className="flex justify-center md:justify-end gap-6">
-            <a
-              href="https://www.instagram.com/limitless_ivan/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-400 hover:text-yellow-300 transition font-medium"
-            >
+            <a href="https://www.instagram.com/limitless_ivan/" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:text-yellow-300 transition font-medium">
               Instagram
             </a>
-            <a
-              href="https://www.youtube.com/@limitlessivan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-400 hover:text-yellow-300 transition font-medium"
-            >
+            <a href="https://www.youtube.com/@limitlessivan" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:text-yellow-300 transition font-medium">
               YouTube
             </a>
           </div>
