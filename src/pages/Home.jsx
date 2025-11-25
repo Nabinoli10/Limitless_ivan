@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ivanLogo from "../assets/ivan.jpg";
 import pfp from "../assets/pfp.jpg";
-import oip from "../assets/oip.jpg";
+import oip from "../assets/OIP.jpg";
 import em from "../assets/em.jpg";
 import menu from "../assets/menu.jpg";
 import confi from "../assets/confi.jpg";
