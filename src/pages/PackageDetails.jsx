@@ -1,187 +1,297 @@
-import React from "react"; 
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { plans } from "./Packages";
-import ytImage from "../assets/YT.jpg";
+// src/pages/PackageDetails.jsx
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getCollection } from "../payloadClient";
 
-// Background images
-import timeImg from "../assets/time.jpg";
-import targetImg from "../assets/target.jpg";
-import focusImg from "../assets/focus.jpg";
+// Assets
+import YTCover from "../assets/yt-cover.jpg";
+import StarterVideo from "../assets/StarterPackage.mp4";
+import ProVideo from "../assets/ProPackage.mp4";
+import EliteVideo from "../assets/ElitePackage.mp4";
+
+// ------------------ FALLBACK DESCRIPTIONS ------------------
+const fallbackBySlug = {
+  starter: {
+    name: "Starter Package — Self-Discovery Kickstart",
+    duration: "4 Weeks",
+    price: "$1,000",
+    sessions: "4 x 1:1 calls",
+    focus: "Self-Discovery Kickstart",
+    who: "This is for people who already understand mindset, habits, and growth, but lately feel off track, low-energy, or disconnected from their vision.",
+    transformation:
+      "You’ll get back into flow — reconnecting with clarity, motivation, confidence, and daily alignment.",
+    features: [
+      "4 weekly 1:1 sessions",
+      "Identity reset work",
+      "Emotional clarity + grounding tools",
+      "Journaling + visualization guidance",
+      "90-day clarity roadmap",
+    ],
+  },
+
+  pro: {
+    name: "Pro Package — Confidence Breakthrough",
+    duration: "8 Weeks",
+    price: "$2,500",
+    sessions: "8 x 1:1 calls",
+    focus: "Confidence Breakthrough",
+    who: "This is for people who know mindset but are stuck emotionally — they understand the ‘how,’ but inner resistance blocks action.",
+    transformation:
+      "You break emotional blocks, rebuild inner confidence, and create natural consistency instead of forcing motivation.",
+    features: [
+      "8 weekly 1:1 sessions",
+      "Deep emotional rewiring",
+      "Nervous system regulation practices",
+      "Accountability + momentum systems",
+      "Voice-note support Mon–Fri",
+    ],
+  },
+
+  elite: {
+    name: "Elite Package — Limitless Mindset Coaching",
+    duration: "12 Weeks",
+    price: "$4,500",
+    sessions: "Weekly deep-dive calls + support",
+    focus: "Limitless Mindset Coaching Program",
+    who: "This is for people who want deep, permanent transformation — identity, emotions, habits, confidence, purpose.",
+    transformation:
+      "You’ll step into your Future Self — not just change habits, but completely shift who you are and how you show up.",
+    features: [
+      "12 deep-dive 1:1 sessions",
+      "Identity + emotional mastery",
+      "Relationship + self-belief rebuilding",
+      "Weekly custom practices",
+      "Priority high-touch support",
+    ],
+  },
+};
 
 export default function PackageDetails() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const plan = plans.find((p) => p.id === id);
+  const [pkg, setPkg] = useState(null);
 
-  if (!plan) {
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getCollection(
+          "packages",
+          `?where[slug][equals]=${slug}`
+        );
+
+        const docs = res?.docs || res;
+        const found = docs && docs.length ? docs[0] : null;
+
+        setPkg(found || fallbackBySlug[slug]);
+      } catch {
+        setPkg(fallbackBySlug[slug]);
+      }
+    })();
+  }, [slug]);
+
+  if (!pkg) {
     return (
-      <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col items-center justify-center p-10">
-        <p className="text-lg mb-4">Package not found.</p>
-        <button
-          onClick={() => navigate("/packages")}
-          className="px-6 py-2 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 transition"
-        >
-          Go Back
-        </button>
+      <div className="min-h-screen bg-black text-gray-200 flex items-center justify-center">
+        Loading…
       </div>
     );
   }
 
+  const {
+    name,
+    duration,
+    price,
+    sessions,
+    focus,
+    who,
+    transformation,
+    features = [],
+  } = pkg;
+
+  const videoMap = {
+    starter: StarterVideo,
+    pro: ProVideo,
+    elite: EliteVideo,
+  };
+
+  const selectedVideo = videoMap[slug];
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-[#141414] to-[#1A1A1A] text-white">
+    <div className="min-h-screen bg-gradient-to-b from-black via-[#050509] to-black text-white">
 
-      {/* Header */}
-      <header className="p-6 bg-black/70 backdrop-blur-lg flex justify-between px-10 items-center shadow-lg border-b border-yellow-400/30 sticky top-0 z-50">
-        <h1 className="text-xl font-bold tracking-wider">
-          <span className="text-white">LIMITLESS</span>{" "}
-          <span className="text-yellow-400">IVAN</span>
-        </h1>
-        <Link
-          to="/packages"
-          className="text-gray-300 hover:text-yellow-400 hover:scale-110 transition-all duration-300"
-        >
-          ← Back to Packages
-        </Link>
-      </header>
-
-      {/* Hero */}
-      <div className="relative w-full overflow-hidden mt-6 rounded-3xl shadow-[0_0_40px_rgba(255,204,0,0.3)] border border-yellow-500/30 max-h-[450px]">
-        <img src={ytImage} alt="Transformation Journey" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center"></div>
+      {/* TOP BANNER */}
+      <div className="relative w-full h-[30vh] md:h-[25vh] overflow-hidden">
+        <img
+          src={YTCover}
+          alt="Coaching Banner"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      {/* Program Overview */}
-      <section className="px-6 md:px-16 py-20 text-center">
-        <h2 className="inline-block px-6 py-3 text-white bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300
-          rounded-full text-3xl md:text-4xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 mb-12">
-          Overview
-        </h2>
+      {/* MAIN CONTENT */}
+      <section className="max-w-5xl mx-auto px-4 md:px-6 pt-10 pb-10">
 
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {/* Duration Card */}
-          <div
-            className="relative p-6 rounded-3xl overflow-hidden shadow-xl group transition-all duration-500 border border-yellow-500/20 bg-cover bg-center"
-            style={{ backgroundImage: `url(${timeImg})` }}
-          >
-            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <h3 className="text-2xl font-bold text-yellow-400 mb-2">Duration</h3>
-              <p className="text-gray-300 text-lg font-medium">{plan.duration}</p>
-            </div>
-          </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="text-xs uppercase tracking-[0.18em] text-gray-400 hover:text-yellow-300 mb-6"
+        >
+          ← Back
+        </button>
 
-          {/* Sessions Card */}
-          <div
-            className="relative p-6 rounded-3xl overflow-hidden shadow-xl group transition-all duration-500 border border-yellow-500/20 bg-cover bg-center"
-            style={{ backgroundImage: `url(${targetImg})` }}
-          >
-            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <h3 className="text-2xl font-bold text-yellow-400 mb-2">Sessions</h3>
-              <p className="text-gray-300 text-lg font-medium">{plan.sessions}</p>
-            </div>
-          </div>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-yellow-300 mb-3">
+          {focus}
+        </p>
 
-          {/* Focus Card */}
-          <div
-            className="relative p-6 rounded-3xl overflow-hidden shadow-xl group transition-all duration-500 border border-yellow-500/20 bg-cover bg-center"
-            style={{ backgroundImage: `url(${focusImg})` }}
-          >
-            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <h3 className="text-2xl font-bold text-yellow-400 mb-2">Primary Focus</h3>
-              <p className="text-gray-300 text-lg font-medium">{plan.focus}</p>
-            </div>
-          </div>
+        <h1 className="text-3xl md:text-4xl font-semibold mb-3">{name}</h1>
+
+        <div className="flex flex-wrap gap-6 text-sm text-gray-300 mb-6">
+          <span>{duration}</span>
+          <span className="text-gray-400 border-l border-gray-700 pl-4">
+            {sessions}
+          </span>
         </div>
 
-        {/* Video + Motivational Description */}
-        <div className="flex flex-col md:flex-row gap-12 md:gap-16 justify-center items-start px-6 md:px-0">
+        <p className="text-lg font-semibold text-yellow-400 mb-10">{price}</p>
 
-          {/* Description / Motivational Copy */}
-          <div className="flex-1 text-left max-w-xl md:max-w-none order-1 md:order-1">
-            <h3 className="inline-block px-4 py-2 mb-6 text-3xl md:text-4xl font-extrabold 
-              bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-              {plan.name}
-            </h3>
-            <div className="text-gray-300 space-y-5 text-lg leading-relaxed">
-              {plan.id === "starter" && (
-                <p>
-                  Over four weeks, the Starter Program empowers you to unlock clarity, resilience, and unwavering self-belief. 
-                  Through carefully designed sessions, you will gain awareness of your vision, reset limiting beliefs, 
-                  release emotional barriers, and transform challenges into opportunities. 
-                  Step into the journey ready to grow and become the best version of yourself.
-                </p>
-              )}
-              {plan.id === "pro" && (
-                <p>
-                  The Pro Program spans eight weeks of focused transformation. You’ll break free from self-doubt, 
-                  strengthen your confidence, and cultivate sustainable motivation. Each step is designed to elevate 
-                  your mindset, ignite action, and help you achieve extraordinary results in all areas of life.
-                </p>
-              )}
-              {plan.id === "elite" && (
-                <p>
-                  The Elite Program is a twelve-week journey to fully embody your future self. 
-                  You will master your mindset, emotions, and identity to create lasting success. 
-                  Through advanced strategies and transformative practices, you will rise above limitations 
-                  and step confidently into your highest potential.
-                </p>
-              )}
+        {/* GRID: TEXT LEFT — VIDEO RIGHT */}
+        <div className="grid md:grid-cols-2 gap-10 mb-20">
 
-              {/* Package-specific motivational quotes */}
-              <p className="italic text-yellow-400 font-semibold mt-4">
-                {plan.id === "starter" && `"Small consistent steps build unstoppable confidence. Your journey starts now."`}
-                {plan.id === "pro" && `"Step beyond your limits and discover your true potential. Momentum creates results."`}
-                {plan.id === "elite" && `"Elite results require elite commitment. Embody the person you aspire to be."`}
+          {/* LEFT SIDE */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-sm uppercase tracking-[0.18em] text-gray-400 mb-2">
+                Who this is for
+              </h2>
+              <p className="text-sm md:text-base text-gray-200 leading-relaxed">
+                {who}
               </p>
             </div>
-          </div>
 
-          {/* Video */}
-          <div className="flex-1 flex justify-center order-2 md:order-2">
-            <div className="relative w-full md:w-[500px] h-[320px] md:h-[500px] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(255,204,0,0.5)] border-4 border-yellow-500/60 transition-transform hover:scale-[1.02] duration-300">
-              <video controls className="w-full h-full object-cover bg-black rounded-3xl">
-                <source src={plan.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            <div>
+              <h2 className="text-sm uppercase tracking-[0.18em] text-gray-400 mb-2">
+                What changes when we’re done
+              </h2>
+              <p className="text-sm md:text-base text-gray-200 leading-relaxed">
+                {transformation}
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <h3 className="text-sm uppercase tracking-[0.18em] text-gray-400 mb-3">
+                What you get
+              </h3>
+              <ul className="space-y-3 text-sm text-gray-200">
+                {features.map((f, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="mt-[6px] h-2 w-2 rounded-full bg-yellow-400"></span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
+          {/* RIGHT SIDE — VIDEO */}
+          <div className="flex justify-center items-start">
+            {selectedVideo ? (
+              <video
+                src={selectedVideo}
+                autoPlay
+                loop
+                controls
+                playsInline
+                className="
+                  rounded-2xl shadow-xl object-cover
+                  w-full max-w-[340px] md:max-w-[380px]
+                  h-[420px] md:h-[460px]
+                "
+              />
+            ) : (
+              <div className="text-gray-500 text-sm">Video unavailable</div>
+            )}
+          </div>
+        </div>
+
+        {/* FAQ SECTION */}
+        <div className="border-t border-yellow-500/20 pt-12 pb-14">
+          <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
+
+          <div className="space-y-6">
+
+            <div>
+              <h3 className="text-lg font-medium text-yellow-300">
+                How do the weekly sessions work?
+              </h3>
+              <p className="text-gray-300 text-sm mt-1">
+                Calls happen on Zoom. Each session includes mindset work, emotional
+                rewiring, and identity-level upgrades.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-yellow-300">
+                Do I need to prepare anything?
+              </h3>
+              <p className="text-gray-300 text-sm mt-1">
+                No — everything is guided. You just show up honestly and ready to grow.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-yellow-300">
+                What happens after the program ends?
+              </h3>
+              <p className="text-gray-300 text-sm mt-1">
+                You leave with identity tools, emotional mastery, and a 90-day
+                roadmap so your results continue long term.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="border-t border-yellow-500/20 pt-10 flex flex-col md:flex-row justify-between gap-6">
+          <div>
+            <p className="text-sm text-gray-300 mb-1">
+              Ready to make the shift?
+            </p>
+            <p className="text-xs text-gray-500">
+              Tell me your situation — I’ll reply with next steps.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <a
+              href="mailto:hello@example.com?subject=Coaching%20Application"
+              className="inline-flex items-center rounded-full bg-yellow-400 px-7 py-2.5 text-sm font-semibold text-black hover:bg-yellow-300"
+            >
+              Apply for this package
+            </a>
+            <a
+              href="https://www.instagram.com/limitless_ivan"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-gray-300 hover:text-yellow-300"
+            >
+              DM me →
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-8 md:px-16 py-20 text-center bg-gradient-to-t from-[#101010] via-[#121212] to-[#101010] shadow-inner">
-        <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-6">Ready to Break Limits?</h2>
-        <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-          Book a free consultation and let’s create your transformation roadmap together.
-        </p>
-        <button
-          onClick={() => alert("Booking functionality coming soon!")}
-          className="px-10 py-4 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 text-black font-semibold rounded-full shadow-lg
-            hover:scale-110 transition-transform duration-300"
-        >
-          Book Free Consultation →
-        </button>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-[#101010] text-white px-6 md:px-12 py-10 border-t border-yellow-500/20 mt-0">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <h4 className="text-yellow-400 font-bold text-lg mb-2">Limitless Ivan</h4>
-            <p className="text-gray-400 text-sm">Empowering transformation through mindset, identity, and emotional mastery.</p>
-          </div>
-          <div className="flex gap-6">
-            <a href="https://www.instagram.com/limitless_ivan/" className="hover:text-yellow-400 transition">Instagram</a>
-            <a href="https://www.youtube.com/@limitlessivan" className="hover:text-yellow-400 transition">YouTube</a>
-          </div>
+      {/* FOOTER */}
+      <footer className="bg-black border-t border-yellow-500/20">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 flex flex-col md:flex-row items-center justify-between">
+          <p className="text-gray-300 text-sm">
+            High-touch 1:1 coaching for people ready for their next chapter.
+          </p>
+          <p className="text-gray-500 text-xs">
+            © {new Date().getFullYear()} Limitless Ivan. All rights reserved.
+          </p>
         </div>
-        <p className="text-gray-500 text-xs mt-6 text-center">© {new Date().getFullYear()} Limitless Ivan. All rights reserved.</p>
       </footer>
-
     </div>
   );
 }
