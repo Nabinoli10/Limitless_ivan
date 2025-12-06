@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { getGlobal, getCollection } from "../payloadClient";
 import logoAsset from "../assets/Logo2.jpg";
-import Oip from "../assets/Oip.jpg";
+import OIP from "../assets/OIP.jpg";
 import em from "../assets/em.jpg";
 import menu from "../assets/menu.jpg";
 import confi from "../assets/confi.jpg";
@@ -214,7 +214,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-7">
-            <Pillar img={Oip} num="01" title="Identity Reset" desc="Redefine who you are and rewrite your story." />
+            <Pillar img={OIP} num="01" title="Identity Reset" desc="Redefine who you are and rewrite your story." />
             <Pillar img={em} num="02" title="Emotional Rewiring" desc="Master emotional control and resilience." />
             <Pillar img={menu} num="03" title="Motivation Menu" desc="Build unstoppable daily habits." />
             <Pillar img={confi} num="04" title="Execution Systems" desc="Action plans that make results automatic." />
