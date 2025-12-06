@@ -5,9 +5,6 @@ import { getCollection } from "../payloadClient";
 
 // Assets
 import YTCover from "../assets/yt-cover.jpg";
-import StarterVideo from "../assets/StarterPackage.mp4";
-import ProVideo from "../assets/ProPackage.mp4";
-import EliteVideo from "../assets/ElitePackage.mp4";
 
 // ------------------ FALLBACK DESCRIPTIONS ------------------
 const fallbackBySlug = {
@@ -106,15 +103,10 @@ export default function PackageDetails() {
     who,
     transformation,
     features = [],
+    promoVideo,   // ⭐ from Payload
   } = pkg;
 
-  const videoMap = {
-    starter: StarterVideo,
-    pro: ProVideo,
-    elite: EliteVideo,
-  };
-
-  const selectedVideo = videoMap[slug];
+  const promoURL = promoVideo?.url;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#050509] to-black text-white">
@@ -185,18 +177,18 @@ export default function PackageDetails() {
                 {features.map((f, i) => (
                   <li key={i} className="flex gap-3">
                     <span className="mt-[6px] h-2 w-2 rounded-full bg-yellow-400"></span>
-                    <span>{f}</span>
+                    <span>{f.item || f}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
 
-          {/* RIGHT SIDE — VIDEO */}
+          {/* RIGHT SIDE — VIDEO FROM PAYLOAD */}
           <div className="flex justify-center items-start">
-            {selectedVideo ? (
+            {promoURL ? (
               <video
-                src={selectedVideo}
+                src={promoURL}
                 autoPlay
                 loop
                 controls
